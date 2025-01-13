@@ -10,12 +10,16 @@ export const RegisterForm = () => {
                             <h3 className="card-title text-white">Register</h3>
                         </div>
                         <div className="m-3">
-                            <label htmlFor="exampleFormControlInput1" className="form-label text-white fs-5">Email address</label>
-                            <input type="email" className="form-control" id="exampleFormControlInput1" placeholder="name@example.com" />
+                            <label htmlFor="email" className="form-label text-white fs-5">Email address</label>
+                            <input type="email" className="form-control" id="email" placeholder="name@example.com" />
                         </div>
                         <div className="m-3">
-                            <label htmlFor="exampleFormControlInput2" className="form-label text-white fs-5">Password</label>
-                            <input type="password" className="form-control" id="exampleFormControlInput2" />
+                            <label htmlFor="username" className="form-label text-white fs-5">Username</label>
+                            <input type="text" className="form-control" id="username" />
+                        </div>
+                        <div className="m-3">
+                            <label htmlFor="password" className="form-label text-white fs-5">Password</label>
+                            <input type="password" className="form-control" id="password" />
                         </div>
                         <div className="d-flex justify-content-center">
                             <Link to='/login' className="fw-bold">Already have an account? Click here to login.</Link>

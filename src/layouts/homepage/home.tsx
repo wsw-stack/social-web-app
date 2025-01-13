@@ -1,5 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom"
+import { Navbar } from "../NavbarAndFooter/Navbar";
+import { Footer } from "../NavbarAndFooter/Footer";
 
 export const Home = () => {
     const navigate = useNavigate();
@@ -23,7 +25,8 @@ export const Home = () => {
     };
 
     return (
-        <div className="d-flex flex-column bg-dark min-vh-100 pt-3">
+        <div className="d-flex flex-column bg-dark min-vh-100">
+            <Navbar />
             {[0, 1].map((index) => (
                 <div className="row mb-1" key={index}>
                     <div className="col-6 offset-3">
@@ -45,7 +48,7 @@ export const Home = () => {
                                         </svg>
                                         {likeCount[index]}
                                     </button>
-                                    <button className="btn btn-sm btn-primary" onClick={() => navigate('/detail')}>View Details</button>
+                                    <button className="btn btn-sm btn-primary" onClick={() => navigate(`/detail/${index}`)}>View Details</button>
                                 </div>
                             </div>
                         </div>
