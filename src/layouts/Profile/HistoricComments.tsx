@@ -1,15 +1,32 @@
 import { useNavigate, useParams } from "react-router-dom";
 import { PersonalProfile } from "./PersonalProfile";
 import { ProfileNavBar } from "./ProfileNavBar";
+import { useState, useEffect } from "react";
 
 export const HistoricComments = () => {
     const navigate = useNavigate();
         const { id } = useParams()
+        const [user, setUser] = useState({
+            username: '',
+            introduction: ''
+        })
+        useEffect(() => {
+            const getCurUser = async (id: any) => {
+                const response = await fetch(`http://localhost:8000/api/users/${id}`)
+                const responseData = await response.json()
+                const newUser = {
+                    username: responseData.username,
+                    introduction: responseData.introduction
+                }
+                setUser(newUser)
+            }
+            getCurUser(id)
+        }, [])
     
         return (
             <div className="d-flex flex-column bg-dark pt-3">
                 <div className="col-md-6 offset-md-3 border min-vh-100">
-                    <PersonalProfile />
+                    <PersonalProfile username={user.username} introduction={user.introduction}/>
                     <ProfileNavBar id={id + "/" || ""} curPage='comments' />
                     <div className="card">
                         <div className="card-body bg-dark">
