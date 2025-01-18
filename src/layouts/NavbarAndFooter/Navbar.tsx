@@ -12,7 +12,7 @@ export const Navbar = () => {
                     method: "GET",
                     credentials: "include",
                     headers: {
-                        "Contetnt-Type": "application/json",
+                        "Content-Type": "application/json",
                     },
                 }
             );
