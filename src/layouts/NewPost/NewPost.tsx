@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import "../../App.css";
 import { Footer } from "../NavbarAndFooter/Footer";
 import { useNavigate } from "react-router-dom";
+import { Navbar } from "../NavbarAndFooter/Navbar";
 
 export const NewPost = () => {
     const [loggedUser, setLoggedUser] = useState(null);
@@ -35,21 +36,26 @@ export const NewPost = () => {
         e.preventDefault();
         const response: any = await fetch("http://localhost:8000/api/posts", {
             method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
             body: JSON.stringify({
-                userId: loggedUser,
-                content,
+                user: loggedUser,
+                content: content,
             }),
         });
         const responseData = await response.json();
         if (responseData.success) {
             alert("Posted successfully");
+            navigate('/')
         } else {
-            alert(responseData.error);
+            alert("An error occured");
         }
     };
 
     return (
         <div className="d-flex flex-column bg-dark min-vh-100">
+            <Navbar />
             <div className="row flex-grow-1 justify-content-center align-items-center">
                 <div className="col-md-6">
                     <div className="d-flex justify-content-center">

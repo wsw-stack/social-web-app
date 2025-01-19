@@ -1,10 +1,10 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom"
 import { Navbar } from "../NavbarAndFooter/Navbar";
-import { Footer } from "../NavbarAndFooter/Footer";
 
 export const Home = () => {
     const navigate = useNavigate();
+    const [posts, setPosts] = useState([])
     const [liked, setLiked] = useState([false, false]);
     const [likeCount, setLikeCount] = useState([2, 3]);
 
@@ -24,19 +24,29 @@ export const Home = () => {
         setLikeCount(newLikeCount);
     };
 
+    useEffect(() => {
+        const getAllPosts = async () => {
+            const response = await fetch('http://localhost:8000/api/posts');
+            const responseData = await response.json();
+            setPosts(responseData.posts)
+            console.log(responseData)
+        }
+        getAllPosts()
+    }, [])
+
     return (
         <div className="d-flex flex-column bg-dark min-vh-100">
             <Navbar />
-            {[0, 1].map((index) => (
+            {posts.map((post: any, index) => (
                 <div className="row mb-1" key={index}>
                     <div className="col-6 offset-3">
                         <div className="card">
                             <div className="card-body bg-dark">
                                 <p className="card-title text-white fw-bold">
-                                    Routers <span className="card-subtitle mb-2 text-secondary">10min ago</span>
+                                    {post.user.username} <span className="card-subtitle mb-2 text-secondary">10min ago</span>
                                 </p>
                                 <p className="card-text text-white">
-                                    Swedish teenager Lucas Bergvall opened his Tottenham Hotspur account in thrilling fashion with the winner in Wednesday's League Cup semi-final first leg but should not even have been on the pitch according to Liverpool captain Virgil van Dijk.
+                                    {post.content}
                                 </p>
                                 <div className="d-flex justify-content-between align-items-center">
                                     <button

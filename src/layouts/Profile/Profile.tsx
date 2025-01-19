@@ -22,7 +22,7 @@ export const Profile = () => {
             setUser(newUser)
         }
         getCurUser(id)
-    }, [])
+    }, [id])
 
     return (
         <div className="d-flex flex-column bg-dark">

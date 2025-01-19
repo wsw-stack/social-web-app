@@ -23,7 +23,7 @@ export const FollowerList = () => {
             setUser(newUser);
         };
         getCurUser(id);
-    }, []);
+    }, [id]);
     return (
         <div className="d-flex flex-column bg-dark min-vh-100 pt-3">
             <div className="col-md-6 offset-md-3 border min-vh-100">
