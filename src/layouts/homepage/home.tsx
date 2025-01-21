@@ -29,7 +29,6 @@ export const Home = () => {
             const response = await fetch('http://localhost:8000/api/posts');
             const responseData = await response.json();
             setPosts(responseData.posts)
-            console.log(responseData)
         }
         getAllPosts()
     }, [])
@@ -58,7 +57,7 @@ export const Home = () => {
                                         </svg>
                                         {likeCount[index]}
                                     </button>
-                                    <button className="btn btn-sm btn-primary" onClick={() => navigate(`/detail/${index}`)}>View Details</button>
+                                    <button className="btn btn-sm btn-primary" onClick={() => navigate(`/detail/${post._id}`)}>View Details</button>
                                 </div>
                             </div>
                         </div>

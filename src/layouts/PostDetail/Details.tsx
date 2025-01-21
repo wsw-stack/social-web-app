@@ -1,7 +1,8 @@
-import { ChangeEvent, useState } from "react";
-import { Link } from "react-router-dom";
+import { ChangeEvent, useEffect, useState } from "react";
+import { Link, useParams } from "react-router-dom";
 
 export const Details = () => {
+    const {id} = useParams()
     const [liked, setLiked] = useState(false);
     const [likeCount, setLikeCount] = useState(2);
     const [comments, setComments] = useState([{
@@ -14,6 +15,10 @@ export const Details = () => {
         time: '5min ago'
     }])
     const [curComment, setCurComment] = useState('')
+    const [postDetail, setPostDetail] = useState({
+        user: { username: "" },
+        content: "",
+    })
 
     const toggleLike = () => {
         let newLiked = liked;
@@ -46,6 +51,17 @@ export const Details = () => {
         setCurComment('')
     }
 
+    useEffect(() => {
+        const getContent = async () => {
+            const response = await fetch(`http://localhost:8000/api/posts/${id}`)
+            const responseData = await response.json()
+            console.log(responseData)
+            console.log(responseData.content)
+            setPostDetail(responseData)
+        }
+        getContent()
+    }, [id])
+
     return (
         <div className="d-flex flex-column bg-dark min-vh-100 pt-3">
             <div className="d-flex justify-content-center">
@@ -63,8 +79,8 @@ export const Details = () => {
                     </div>
                     <div className="card">
                         <div className="card-body bg-dark">
-                            <p className="card-title text-white fw-bold">Routers <span className="card-subtitle mb-2 text-secondary">10min ago</span></p>
-                            <p className="card-text text-white">Swedish teenager Lucas Bergvall opened his Tottenham Hotspur account in thrilling fashion with the winner in Wednesday's League Cup semi-final first leg but should not even have been on the pitch according to Liverpool captain Virgil van Dijk.</p>
+                            <p className="card-title text-white fw-bold"> {postDetail.user.username} <span className="card-subtitle mb-2 text-secondary">10min ago</span></p>
+                            <p className="card-text text-white">{postDetail.content}</p>
                             <div className="d-flex bg-dark ms-1 mb-1">
                                 <button
                                     className={`btn btn-sm ${liked ? 'btn-danger' : 'btn-secondary'} me-3`}

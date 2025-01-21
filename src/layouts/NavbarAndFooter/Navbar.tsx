@@ -1,8 +1,9 @@
 import { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 export const Navbar = () => {
     const [loggedUser, setLoggedUser] = useState(null);
+    const navigate = useNavigate()
 
     useEffect(() => {
         const fetchCurrentUser = async () => {
@@ -23,7 +24,25 @@ export const Navbar = () => {
             }
         };
         fetchCurrentUser();
-    }, []);
+    }, [loggedUser]);
+
+    const handleLogout = async () => {
+        const response: any = await fetch(
+            "http://localhost:8000/api/users/logout",
+            {
+                method: "POST",
+                credentials: "include",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+            }
+        );
+        const responseData = await response.json();
+        if (responseData.success) {
+            setLoggedUser(null)
+            navigate('/')
+        }
+    }
 
     return (
         <nav className="navbar navbar-expand-lg bg-dark navbar-dark sticky-top mb-2">
@@ -78,6 +97,11 @@ export const Navbar = () => {
                         </ul>
                     ) : (
                         <ul className="navbar-nav ml-auto">
+                            <li className="nav-item">
+                                <button className="nav-link" onClick={handleLogout}>
+                                    Logout
+                                </button>
+                            </li>
                             <li className="nav-item">
                                 <Link className="nav-link" to={`/profile/${loggedUser}`}>
                                     My Profile
