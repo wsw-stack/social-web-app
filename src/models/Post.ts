@@ -1,5 +1,8 @@
+import { IReview } from "./Review";
+
 export interface IPost {
     user: { username: "" };
     content: "";
-    likes: [];
+    likes: string[];
+    reviews: IReview[]
 }

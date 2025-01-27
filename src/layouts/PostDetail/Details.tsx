@@ -4,28 +4,20 @@ import { PostDetails } from "./PostDetails";
 import { Navbar } from "../NavbarAndFooter/Navbar";
 import { fetchCurrentUser } from "../../common";
 import { IPost } from "../../models/Post";
+import { IReview } from '../../models/Review'
+import { Review } from "./Review";
+import { NewReviewForm } from "./NewReviewForm";
 
 export const Details = () => {
     const { id } = useParams();
     const navigate = useNavigate();
     const [curUser, setCurUser] = useState(null);
-    const [comments, setComments] = useState([
-        {
-            user: "usagi",
-            comment: "Yahayaha",
-            time: "10h ago",
-        },
-        {
-            user: "John",
-            comment: "Amazing young star!",
-            time: "5min ago",
-        },
-    ]);
     const [curComment, setCurComment] = useState("");
     const [postDetails, setPostDetails] = useState<IPost>({
         user: { username: "" },
         content: "",
         likes: [],
+        reviews: []
     });
 
     const handleChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
@@ -33,25 +25,35 @@ export const Details = () => {
         setCurComment(newValue);
     };
 
-    const postComment = (e: React.FormEvent<HTMLFormElement>) => {
-        e.preventDefault();
-        setComments((comments) => [
-            ...comments,
-            {
-                user: "unknown",
-                comment: curComment,
-                time: "10s ago",
+    const postComment = async (e: React.FormEvent<HTMLFormElement>) => {
+        e.preventDefault()
+        if (curUser == null) {
+            return navigate("/login");
+        }
+        const response = await fetch(`http://localhost:8000/api/reviews`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
             },
-        ]);
+            body: JSON.stringify({
+                postId: id,
+                user: curUser,
+                content: curComment
+            }),
+        });
+        const responseData = await response.json()
+        if (responseData.success) {
+            alert(responseData.success)
+        } else {
+            console.log(responseData.error)
+        }
         setCurComment("");
     };
 
-    const toggleLike = async () => {
-        const sessionUser = await fetchCurrentUser();
-        if (sessionUser == null) {
+    const toggleLikePost = async () => {
+        if (curUser == null) {
             return navigate("/login");
         }
-        setCurUser(sessionUser);
         const liked = curUser != null && postDetails?.likes?.includes(curUser);
 
         if (liked) {
@@ -106,10 +108,7 @@ export const Details = () => {
             <div className="row">
                 <div className="col-md-6 offset-md-3">
                     <div className="mb-3">
-                        <Link
-                            to="/"
-                            className="text-primary fs-5 icon-link text-white text-decoration-none"
-                        >
+                        <Link to="/" className="text-primary fs-5 icon-link text-white text-decoration-none">
                             <svg
                                 xmlns="http://www.w3.org/2000/svg"
                                 width="25"
@@ -128,46 +127,12 @@ export const Details = () => {
                     </div>
                     <PostDetails
                         postDetails={postDetails}
-                        toggleLike={toggleLike}
+                        toggleLikePost={toggleLikePost}
+                        curUser={curUser}
                     />
-                    <form onSubmit={postComment}>
-                        <div className="mb-2">
-                            <label
-                                htmlFor="comment"
-                                className="form-label text-white"
-                            >
-                                Leave your comment here
-                            </label>
-                            <textarea
-                                className="form-control bg-dark text-white"
-                                id="comment"
-                                rows={3}
-                                onChange={handleChange}
-                                value={curComment}
-                            ></textarea>
-                            <button
-                                type="submit"
-                                className="btn mt-3 text-light border-light fw-bold"
-                                style={{ borderWidth: "2px" }}
-                            >
-                                Comment
-                            </button>
-                        </div>
-                    </form>
-                    {comments.map((value, index) => (
-                        <div className="card mb-1" key={index}>
-                            <div className="card-body bg-dark">
-                                <p className="card-title text-white fw-bold">
-                                    {value.user}{" "}
-                                    <span className="card-subtitle mb-2 text-secondary">
-                                        {value.time}
-                                    </span>
-                                </p>
-                                <p className="card-text text-white">
-                                    {value.comment}
-                                </p>
-                            </div>
-                        </div>
+                    <NewReviewForm curUser={curUser} postComment={postComment} curComment={curComment} handleChange={handleChange} />
+                    {postDetails.reviews.map((review: any, index) => (
+                        <Review id={review._id} review={review} curUser={curUser} key={index} />
                     ))}
                 </div>
             </div>
