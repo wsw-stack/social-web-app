@@ -8,6 +8,7 @@ import { Profile } from "./layouts/Profile/Profile";
 import { FollowerList } from "./layouts/Profile/FollowerList";
 import { FollowingList } from "./layouts/Profile/FollowingList";
 import { HistoricComments } from "./layouts/Profile/HistoricComments";
+import { ReviewDetails } from "./layouts/ReviewDetail/ReviewDetail";
 
 export const App = () => {
     return (
@@ -17,6 +18,7 @@ export const App = () => {
             <Route path="/" element={<Home />} />
             <Route path="/new" element={<NewPost />} />
             <Route path="/detail/:id" element={<Details />} />
+            <Route path="/reviews/:id" element={<ReviewDetails />} />
             <Route path="/profile/:id" element={<Profile />} />
             <Route path="/profile/:id/followers" element={<FollowerList />} />
             <Route

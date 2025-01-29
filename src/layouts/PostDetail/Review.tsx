@@ -2,7 +2,7 @@ import { useNavigate } from "react-router-dom";
 import { IReview } from "../../models/Review"
 import { useState } from "react";
 
-export const Review: React.FC<{id: string, review: IReview, curUser: string | null}> = ({id, review, curUser}) => {
+export const Review: React.FC<{review: IReview, curUser: string | null, fetchPostDetails: any}> = ({review, curUser, fetchPostDetails}) => {
     const navigate = useNavigate()
     const [curReview, setCurReview] = useState<IReview>({...review})
 
@@ -11,33 +11,27 @@ export const Review: React.FC<{id: string, review: IReview, curUser: string | nu
                 return navigate("/login");
             }
             const liked = curUser != null && review?.likes.includes(curUser);
+            const updatedLikes = liked
+            ? curReview.likes.filter((item) => item !== curUser)
+            : [...curReview.likes, curUser]
     
-            if (liked) {
-                setCurReview((item: IReview) => {
-                    item.likes = item?.likes?.filter(
-                        (item: any) => item !== curUser
-                    );
-                    return { ...item };
-                });
-            } else {
-                setCurReview((item: IReview) => {
-                    item.likes.push(curUser);
-                    return { ...item };
-                });
-            }
+            setCurReview({...curReview, likes: updatedLikes})
     
-            const response = await fetch(`http://localhost:8000/api/reviews/${id}`, {
+            const response = await fetch(`http://localhost:8000/api/reviews/${review._id}`, {
                 method: "PUT",
                 headers: {
                     "Content-Type": "application/json",
                 },
                 body: JSON.stringify({
                     ...curReview,
+                    likes: updatedLikes
                 }),
             });
             const responseData = await response.json();
             if (responseData.error) {
                 console.log(responseData.error);
+            } else {
+                fetchPostDetails()
             }
         };
 
@@ -56,7 +50,7 @@ export const Review: React.FC<{id: string, review: IReview, curUser: string | nu
                 <div className="d-flex bg-dark ms-1 mb-1">
                     <button
                         className={`btn btn-sm ${
-                            (curUser != null && review.likes.includes(curUser)) ? "btn-danger" : "btn-secondary"
+                            (curUser != null && curReview.likes.includes(curUser)) ? "btn-danger" : "btn-secondary"
                         } me-3`}
                         onClick={toggleLike}
                     >
@@ -73,7 +67,7 @@ export const Review: React.FC<{id: string, review: IReview, curUser: string | nu
                                 d="M8 1.314C12.438-3.248 23.534 4.735 8 15-7.534 4.736 3.562-3.248 8 1.314"
                             />
                         </svg>
-                        {review.likes.length}
+                        {curReview.likes.length}
                     </button>
                     <button className="btn btn-sm btn-secondary me-3 btn-disabled">
                         <svg
@@ -88,6 +82,7 @@ export const Review: React.FC<{id: string, review: IReview, curUser: string | nu
                         </svg>
                         {review.replies.length}
                     </button>
+                    <button className="btn btn-sm btn-primary ms-auto" onClick={() => navigate(`/reviews/${review._id}`)}>View Details</button>
                 </div>
             </div>
         </div>

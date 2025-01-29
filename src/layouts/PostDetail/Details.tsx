@@ -4,7 +4,7 @@ import { PostDetails } from "./PostDetails";
 import { Navbar } from "../NavbarAndFooter/Navbar";
 import { fetchCurrentUser } from "../../common";
 import { IPost } from "../../models/Post";
-import { IReview } from '../../models/Review'
+import { IReview } from "../../models/Review";
 import { Review } from "./Review";
 import { NewReviewForm } from "./NewReviewForm";
 
@@ -14,10 +14,11 @@ export const Details = () => {
     const [curUser, setCurUser] = useState(null);
     const [curComment, setCurComment] = useState("");
     const [postDetails, setPostDetails] = useState<IPost>({
+        _id: "",
         user: { username: "" },
         content: "",
         likes: [],
-        reviews: []
+        reviews: [],
     });
 
     const handleChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
@@ -26,7 +27,7 @@ export const Details = () => {
     };
 
     const postComment = async (e: React.FormEvent<HTMLFormElement>) => {
-        e.preventDefault()
+        e.preventDefault();
         if (curUser == null) {
             return navigate("/login");
         }
@@ -38,14 +39,15 @@ export const Details = () => {
             body: JSON.stringify({
                 postId: id,
                 user: curUser,
-                content: curComment
+                content: curComment,
             }),
         });
-        const responseData = await response.json()
+        const responseData = await response.json();
         if (responseData.success) {
-            alert(responseData.success)
+            alert(responseData.success);
+            fetchPostDetails()
         } else {
-            console.log(responseData.error)
+            console.log(responseData.error);
         }
         setCurComment("");
     };
@@ -55,20 +57,11 @@ export const Details = () => {
             return navigate("/login");
         }
         const liked = curUser != null && postDetails?.likes?.includes(curUser);
+        const updatedLikes = liked
+            ? postDetails.likes.filter((item) => item !== curUser)
+            : [...postDetails.likes, curUser];
 
-        if (liked) {
-            setPostDetails((postDetails: any) => {
-                postDetails.likes = postDetails?.likes?.filter(
-                    (item: any) => item !== curUser
-                );
-                return { ...postDetails };
-            });
-        } else {
-            setPostDetails((postDetails: any) => {
-                postDetails.likes.push(curUser);
-                return { ...postDetails };
-            });
-        }
+        setPostDetails((prev) => ({ ...prev, likes: updatedLikes }))
 
         const response = await fetch(`http://localhost:8000/api/posts/${id}`, {
             method: "PUT",
@@ -77,7 +70,8 @@ export const Details = () => {
             },
             body: JSON.stringify({
                 id,
-                ...postDetails,
+                ...postDetails, 
+                likes: updatedLikes
             }),
         });
         const responseData = await response.json();
@@ -86,18 +80,19 @@ export const Details = () => {
         }
     };
 
+    const fetchPostDetails = async () => {
+        const sessionUser = await fetchCurrentUser();
+        setCurUser(sessionUser);
+        const response = await fetch(
+            `http://localhost:8000/api/posts/${id}`
+        );
+        const responseData = await response.json();
+        setPostDetails(responseData);
+    };
+
     useEffect(() => {
-        const getContent = async () => {
-            const sessionUser = await fetchCurrentUser();
-            setCurUser(sessionUser);
-            const response = await fetch(
-                `http://localhost:8000/api/posts/${id}`
-            );
-            const responseData = await response.json();
-            setPostDetails(responseData);
-        };
-        getContent();
-    }, [id])
+        fetchPostDetails();
+    }, [id]);
 
     return (
         <div className="d-flex flex-column bg-dark min-vh-100">
@@ -108,7 +103,10 @@ export const Details = () => {
             <div className="row">
                 <div className="col-md-6 offset-md-3">
                     <div className="mb-3">
-                        <Link to="/" className="text-primary fs-5 icon-link text-white text-decoration-none">
+                        <Link
+                            to="/"
+                            className="text-primary fs-5 icon-link text-white text-decoration-none"
+                        >
                             <svg
                                 xmlns="http://www.w3.org/2000/svg"
                                 width="25"
@@ -130,9 +128,19 @@ export const Details = () => {
                         toggleLikePost={toggleLikePost}
                         curUser={curUser}
                     />
-                    <NewReviewForm curUser={curUser} postComment={postComment} curComment={curComment} handleChange={handleChange} />
+                    <NewReviewForm
+                        curUser={curUser}
+                        postComment={postComment}
+                        curComment={curComment}
+                        handleChange={handleChange}
+                    />
                     {postDetails.reviews.map((review: any, index) => (
-                        <Review id={review._id} review={review} curUser={curUser} key={index} />
+                        <Review
+                            review={review}
+                            curUser={curUser}
+                            key={index}
+                            fetchPostDetails={fetchPostDetails}
+                        />
                     ))}
                 </div>
             </div>
