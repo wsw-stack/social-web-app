@@ -4,11 +4,13 @@ import { IReview } from "../../models/Review";
 import { fetchCurrentUser } from "../../common";
 import { Navbar } from "../NavbarAndFooter/Navbar";
 import { NewReviewForm } from "../PostDetail/NewReviewForm";
+import { Review } from "../PostDetail/Review";
 
 export const ReviewDetails = () => {
     const { id } = useParams();
     const navigate = useNavigate();
     const [curUser, setCurUser] = useState(null);
+    const [replyCount, setReplyCount] = useState(0)
     const [curComment, setCurComment] = useState("");
     const [reviewDetails, setReviewDetails] = useState<IReview>({
         _id: "",
@@ -30,41 +32,54 @@ export const ReviewDetails = () => {
     const fetchReview = async () => {
         const sessionUser = await fetchCurrentUser();
         setCurUser(sessionUser);
-        const response = await fetch(
-            `http://localhost:8000/api/reviews/${id}`
-        );
+        const response = await fetch(`http://localhost:8000/api/reviews/${id}`);
         const responseData = await response.json();
         if (responseData.review) {
             setReviewDetails(responseData.review);
         }
     };
 
-    // edit this function to enable replying to a comment!
-    const postReview = async (e: React.FormEvent<HTMLFormElement>) => {
+    const getReplyCount = async () => {
+        const response = await fetch(`http://localhost:8000/api/reviews/${id}/replyCount`)
+        const responseData = await response.json()
+        if(responseData.replyCount) {
+            setReplyCount(responseData.replyCount)
+        }
+    }
+
+    useEffect(() => {
+        getReplyCount()
+    }, [id])
+
+    const postReply = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         if (curUser == null) {
             return navigate("/login");
         }
-        // const updatedLikes = reviewDetails.replies.push(curComment)
-        const response = await fetch(`http://localhost:8000/api/reviews/${id}`, {
-            method: "PUT",
-            headers: {
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-                id,
-                reviewDetails,
 
-            }),
-        });
+        const response = await fetch(
+            `http://localhost:8000/api/reviews/${id}`,
+            {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                    user: curUser,
+                    content: curComment,
+                }),
+            }
+        );
         const responseData = await response.json();
         if (responseData.success) {
             alert(responseData.success);
-            fetchReview()
+            fetchReview();
+            getReplyCount()
         } else {
             console.log(responseData.error);
         }
         setCurComment("");
+        console.log(curComment)
     };
 
     const toggleLike = async () => {
@@ -177,17 +192,25 @@ export const ReviewDetails = () => {
                                     >
                                         <path d="M8 15c4.418 0 8-3.134 8-7s-3.582-7-8-7-8 3.134-8 7c0 1.76.743 3.37 1.97 4.6-.097 1.016-.417 2.13-.771 2.966-.079.186.074.394.273.362 2.256-.37 3.597-.938 4.18-1.234A9 9 0 0 0 8 15" />
                                     </svg>
-                                    {reviewDetails.replies.length}
+                                    {replyCount}
                                 </button>
                             </div>
                         </div>
                     </div>
                     <NewReviewForm
                         curUser={curUser}
-                        postComment={postReview}
+                        postComment={postReply}
                         curComment={curComment}
                         handleChange={handleChange}
                     />
+                    {reviewDetails.replies.map((review: any, index) => (
+                        <Review
+                            review={review}
+                            curUser={curUser}
+                            key={index}
+                            fetchPostDetails={fetchReview}
+                        />
+                    ))}
                 </div>
             </div>
         </div>

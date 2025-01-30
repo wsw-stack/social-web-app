@@ -10,12 +10,16 @@ import { NewReviewForm } from "./NewReviewForm";
 
 export const Details = () => {
     const { id } = useParams();
+    const [reviewCount, setReviewCount] = useState(0)
     const navigate = useNavigate();
     const [curUser, setCurUser] = useState(null);
     const [curComment, setCurComment] = useState("");
     const [postDetails, setPostDetails] = useState<IPost>({
         _id: "",
-        user: { username: "" },
+        user: { 
+            _id: "",
+            username: "" 
+        },
         content: "",
         likes: [],
         reviews: [],
@@ -46,6 +50,7 @@ export const Details = () => {
         if (responseData.success) {
             alert(responseData.success);
             fetchPostDetails()
+            getReviewCount()
         } else {
             console.log(responseData.error);
         }
@@ -90,8 +95,18 @@ export const Details = () => {
         setPostDetails(responseData);
     };
 
+    const getReviewCount = async () => {
+        const response = await fetch(`http://localhost:8000/api/posts/${id}/reviewCount`)
+        const responseData = await response.json()
+        if(responseData.reviewCount) {
+            setReviewCount(responseData.reviewCount)
+            console.log(reviewCount)
+        }
+    }
+
     useEffect(() => {
-        fetchPostDetails();
+        fetchPostDetails()
+        getReviewCount()
     }, [id]);
 
     return (
@@ -127,6 +142,7 @@ export const Details = () => {
                         postDetails={postDetails}
                         toggleLikePost={toggleLikePost}
                         curUser={curUser}
+                        reviewCount={reviewCount}
                     />
                     <NewReviewForm
                         curUser={curUser}
