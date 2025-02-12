@@ -3,15 +3,15 @@ export class User {
     username: string
     email?: string
     introduction: string
-    following: string[]
-    followers: string[]
+    following: User[]
+    followers: User[]
 
     constructor(_id: string,
         username: string,
         email: string,
         introduction: string,
-        following: string[] = [],
-        followers: string[] = []) {
+        following: User[] = [],
+        followers: User[] = []) {
             this._id = _id
             this.username = username
             this.email = email

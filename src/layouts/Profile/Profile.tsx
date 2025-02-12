@@ -1,4 +1,4 @@
-import { useNavigate, useParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import { ProfileNavBar } from "./ProfileNavBar";
 import { PersonalProfile } from "./PersonalProfile";
 import { Navbar } from "../NavbarAndFooter/Navbar";
@@ -9,7 +9,6 @@ import { IPost } from "../../models/Post";
 import { Post } from "./Post";
 
 export const Profile = () => {
-    const navigate = useNavigate();
     const { id } = useParams();
     const [user, setUser] = useState<User>({
         _id: "",
@@ -18,8 +17,32 @@ export const Profile = () => {
         followers: [],
         following: [],
     });
-    const [loggedUser, setLoggedUser] = useState(null);
+    const [loggedUser, setLoggedUser]: any = useState(null);
     const [allPosts, setAllPosts] = useState<IPost[]>([]);
+
+    const follow = async () => {
+        const updatedFollowers = user.followers
+        updatedFollowers.push(loggedUser)
+        setUser(oldUser => {
+            return {
+                ...oldUser,
+                followers: updatedFollowers
+            }
+        })
+        const response = await fetch(`http://localhost:8000/api/users/follow/${id}`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+                followerId: loggedUser
+            }),
+        });
+        const responseData = await response.json();
+        if(responseData.success) {
+            alert('success')
+        }
+    }
 
     const getAllPosts = async (id: any) => {
         const response = await fetch(
@@ -43,13 +66,13 @@ export const Profile = () => {
         };
         getAllPosts(id);
         getProfileUser(id);
-    }, [id]);
+    }, [id, user]);
 
     return (
         <div className="d-flex flex-column bg-dark min-vh-100">
             <Navbar />
             <div className="col-md-6 offset-md-3 border flex-column flex-grow-1">
-                <PersonalProfile user={user} loggedUser={loggedUser} />
+                <PersonalProfile user={user} setUser={setUser} loggedUser={loggedUser}/>
                 <ProfileNavBar id={id + "/" || ""} curPage="profile" />
                 {allPosts.length === 0 ? (
                     <h4 className="d-flex text-white justify-content-center mt-3">

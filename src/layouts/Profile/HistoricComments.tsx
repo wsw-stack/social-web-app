@@ -47,7 +47,7 @@ export const HistoricComments = () => {
         <div className="d-flex flex-column bg-dark min-vh-100">
             <Navbar />
             <div className="col-md-6 offset-md-3 border flex-column flex-grow-1">
-                <PersonalProfile user={user} loggedUser={loggedUser} />
+                <PersonalProfile user={user} loggedUser={loggedUser} setUser={setUser}/>
                 <ProfileNavBar id={id + "/" || ""} curPage="comments" />
                 {allReviews.length === 0 ? (
                     <h4 className="d-flex text-white justify-content-center mt-3">
