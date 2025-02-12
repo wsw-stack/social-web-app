@@ -9,6 +9,7 @@ import { FollowerList } from "./layouts/Profile/FollowerList";
 import { FollowingList } from "./layouts/Profile/FollowingList";
 import { HistoricComments } from "./layouts/Profile/HistoricComments";
 import { ReviewDetails } from "./layouts/ReviewDetail/ReviewDetail";
+import { EditProfile } from "./layouts/Profile/EditProfile";
 
 export const App = () => {
     return (
@@ -26,6 +27,7 @@ export const App = () => {
                 element={<HistoricComments />}
             />
             <Route path="/profile/:id/following" element={<FollowingList />} />
+            <Route path="/profile/edit" element={<EditProfile />} />
         </Routes>
     );
 };

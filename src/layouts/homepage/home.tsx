@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom"
+import { Link, useNavigate } from "react-router-dom"
 import { Navbar } from "../NavbarAndFooter/Navbar";
 
 export const Home = () => {
@@ -41,8 +41,8 @@ export const Home = () => {
                     <div className="col-6 offset-3">
                         <div className="card">
                             <div className="card-body bg-dark">
-                                <p className="card-title text-white fw-bold">
-                                    {post.user.username} <span className="card-subtitle mb-2 text-secondary">10min ago</span>
+                                <p className="card-title fw-bold">
+                                    <Link to={`/profile/${post.user._id}`} className="text-white">{post.user.username}</Link> <span className="card-subtitle mb-2 text-secondary">10min ago</span>
                                 </p>
                                 <p className="card-text text-white">
                                     {post.content}

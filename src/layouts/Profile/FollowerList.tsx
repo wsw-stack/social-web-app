@@ -2,43 +2,51 @@ import { useParams, Link } from "react-router-dom";
 import { PersonalProfile } from "./PersonalProfile";
 import { ProfileNavBar } from "./ProfileNavBar";
 import { useState, useEffect } from "react";
+import { User } from "../../models/User";
+import { Navbar } from "../NavbarAndFooter/Navbar";
+import { fetchCurrentUser } from "../../common";
+import { PersonOverview } from "./PersonOverview";
 
 export const FollowerList = () => {
     const { id } = useParams();
-    const [user, setUser] = useState({
+    const [user, setUser] = useState<User>({
+        _id: "",
         username: "",
         introduction: "",
+        followers: [],
+        following: [],
     });
+    const [loggedUser, setLoggedUser] = useState(null);
+
     useEffect(() => {
-        const getCurUser = async (id: any) => {
+        const getProfileUser = async (id: any) => {
             const response = await fetch(
                 `http://localhost:8000/api/users/${id}`
             );
             const responseData = await response.json();
-            console.log(responseData)
-            const newUser = {
-                username: responseData.username,
-                introduction: responseData.introduction,
-            };
-            setUser(newUser);
+            const sessionUser = await fetchCurrentUser();
+            setLoggedUser(sessionUser);
+            setUser(responseData);
         };
-        getCurUser(id);
+        getProfileUser(id);
     }, [id]);
     return (
-        <div className="d-flex flex-column bg-dark min-vh-100 pt-3">
-            <div className="col-md-6 offset-md-3 border min-vh-100">
-                <PersonalProfile username={user.username} introduction={user.introduction}/>
+        <div className="d-flex flex-column bg-dark min-vh-100">
+            <Navbar />
+            <div className="col-md-6 offset-md-3 border flex-column flex-grow-1">
+                <PersonalProfile user={user} loggedUser={loggedUser} />
                 <ProfileNavBar id={id + "/" || ""} curPage="followers" />
-                <div className="card">
-                    <div className="card-body bg-dark">
-                        <p className="card-title text-white fw-bold">
-                            老周横眉
-                        </p>
-                        <p className="card-text text-white">
-                            原本是墙内时政批判类头部主播，微信视频号被下架几十个10万+，目前墙内已全面封杀。油管4个月破10万订阅。大马华人，美国8年，上海15年（2008~2023），现在新加坡；斯坦福计算机系，前金融企业CEO。{" "}
-                        </p>
-                    </div>
-                </div>
+                {user.followers.length === 0 ? (
+                    <h4 className="d-flex text-white justify-content-center mt-3">
+                        {loggedUser != null && id === loggedUser
+                            ? "You have not followed anyone yet!"
+                            : "This user has not followed anyone yet."}
+                    </h4>
+                ) : (
+                    user.followers.map((follower, index) => (
+                        <PersonOverview key={index} />
+                    ))
+                )}
             </div>
         </div>
     );

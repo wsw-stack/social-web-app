@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { fetchCurrentUser } from "../../common";
-import { useNavigate, useParams } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import { IPost } from "../../models/Post";
 
 export const PostDetails: React.FC<{ postDetails: IPost, toggleLikePost: any, curUser: string | null, reviewCount: number}> = ({postDetails, toggleLikePost, curUser, reviewCount}) => {
@@ -10,9 +10,9 @@ export const PostDetails: React.FC<{ postDetails: IPost, toggleLikePost: any, cu
         <div className="card">
             <div className="card-body bg-dark">
                 <p className="card-title text-white fw-bold">
-                    {postDetails.user.username}{" "}
+                    <Link to={`/profile/${postDetails.user._id}`} className="text-white">{postDetails.user.username}</Link>
                     <span className="card-subtitle mb-2 text-secondary">
-                        10min ago
+                        {" "}10min ago
                     </span>
                 </p>
                 <p className="card-text text-white">{postDetails.content}</p>

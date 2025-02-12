@@ -16,7 +16,7 @@ export const ReviewDetails = () => {
         _id: "",
         post: "",
         user: {
-            id: "",
+            _id: "",
             username: "",
         },
         content: "",
@@ -147,10 +147,10 @@ export const ReviewDetails = () => {
                     </div>
                     <div className="card">
                         <div className="card-body bg-dark">
-                            <p className="card-title text-white fw-bold">
-                                {reviewDetails.user.username}{" "}
+                            <p className="card-title fw-bold">
+                                <Link to={`/profile/${reviewDetails.user._id}`} className="text-white">{reviewDetails.user.username}</Link>
                                 <span className="card-subtitle mb-2 text-secondary">
-                                    10min ago
+                                    {" "}10min ago
                                 </span>
                             </p>
                             <p className="card-text text-white">

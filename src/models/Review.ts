@@ -2,7 +2,7 @@ export interface IReview {
     _id?: string
     post: string
     user: {
-        id: string,
+        _id: string,
         username: string
     }
     content: string
