@@ -20,30 +20,6 @@ export const Profile = () => {
     const [loggedUser, setLoggedUser]: any = useState(null);
     const [allPosts, setAllPosts] = useState<IPost[]>([]);
 
-    const follow = async () => {
-        const updatedFollowers = user.followers
-        updatedFollowers.push(loggedUser)
-        setUser(oldUser => {
-            return {
-                ...oldUser,
-                followers: updatedFollowers
-            }
-        })
-        const response = await fetch(`http://localhost:8000/api/users/follow/${id}`, {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-                followerId: loggedUser
-            }),
-        });
-        const responseData = await response.json();
-        if(responseData.success) {
-            alert('success')
-        }
-    }
-
     const getAllPosts = async (id: any) => {
         const response = await fetch(
             `http://localhost:8000/api/posts/user/${id}`

@@ -30,10 +30,27 @@ export const PersonalProfile: React.FC<{
                 }),
             }
         );
-        const responseData = await response.json();
-        if (responseData.success) {
-            alert("success");
-        }
+    };
+    const unfollow = async () => {
+        const updatedFollowers = user.followers;
+        setUser((oldUser: User) => {
+            return {
+                ...oldUser,
+                followers: updatedFollowers.filter(item => item !== loggedUser),
+            };
+        });
+        const response = await fetch(
+            `http://localhost:8000/api/users/unfollow/${id}`,
+            {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                    followerId: loggedUser,
+                }),
+            }
+        );
     };
     const checkFollowed = () => {
         for(let follower of user.followers) {
@@ -76,14 +93,14 @@ export const PersonalProfile: React.FC<{
                             </Link>
                         </div>
                     )}
-                    {loggedUser !== null && !followed && (
+                    {loggedUser !== null && user._id !== loggedUser && !followed && (
                         <div className="ms-auto">
                             <button className="btn btn-primary" onClick={follow}>Follow</button>
                         </div>
                     )}
-                    {loggedUser !== null && followed && (
+                    {loggedUser !== null && user._id !== loggedUser && followed && (
                         <div className="ms-auto">
-                            <button className="btn btn-primary">UnFollow</button>
+                            <button className="btn btn-primary" onClick={unfollow}>UnFollow</button>
                         </div>
                     )}
                 </div>

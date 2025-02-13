@@ -1,10 +1,15 @@
-export const PersonOverview = () => {
+import { Link } from "react-router-dom";
+import { User } from "../../models/User";
+
+export const PersonOverview: React.FC<{ person: User }> = ({ person }) => {
     return (
         <div className="card">
             <div className="card-body bg-dark">
-                <p className="card-title text-white fw-bold">老周横眉</p>
+                <Link to={`/profile/${person._id}`} className="card-title text-white fw-bold">{person.username}</Link>
                 <p className="card-text text-white">
-                    原本是墙内时政批判类头部主播，微信视频号被下架几十个10万+，目前墙内已全面封杀。油管4个月破10万订阅。大马华人，美国8年，上海15年（2008~2023），现在新加坡；斯坦福计算机系，前金融企业CEO。{" "}
+                    {person.introduction === ""
+                        ? "This user has no introduction yet"
+                        : person.introduction}
                 </p>
             </div>
         </div>

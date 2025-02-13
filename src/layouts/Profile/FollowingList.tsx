@@ -44,7 +44,7 @@ export const FollowingList = () => {
                     </h4>
                 ) : (
                     user.followers.map((follower, index) => (
-                        <PersonOverview key={index} />
+                        <PersonOverview key={index} person={follower} />
                     ))
                 )}
             </div>
