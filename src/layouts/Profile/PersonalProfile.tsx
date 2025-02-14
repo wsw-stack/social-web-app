@@ -18,7 +18,7 @@ export const PersonalProfile: React.FC<{
                 followers: updatedFollowers,
             };
         });
-        const response = await fetch(
+        await fetch(
             `http://localhost:8000/api/users/follow/${id}`,
             {
                 method: "POST",
@@ -39,7 +39,7 @@ export const PersonalProfile: React.FC<{
                 followers: updatedFollowers.filter(item => item !== loggedUser),
             };
         });
-        const response = await fetch(
+        await fetch(
             `http://localhost:8000/api/users/unfollow/${id}`,
             {
                 method: "POST",
